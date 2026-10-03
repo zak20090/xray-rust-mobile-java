@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      # The upstream xraymobile AAR is resolved from Maven Central
+      # (see XRAY_RUST_MOBILE_* in gradle.properties), so nothing is stubbed.
+      # Unit tests never load the native libraries: CoreController talks to the
+      # core through a package-private seam that the tests fake.
+      - run: ./gradlew build test --no-daemon
